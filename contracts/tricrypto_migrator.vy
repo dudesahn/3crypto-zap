@@ -92,12 +92,6 @@ def migrate_to_new_pool():
         bal = ERC20(OLD_TOKEN).balanceOf(self)
         old_amount += bal
 
-    # Transfer LP in if we hold any
-    bal = ERC20(OLD_TOKEN).balanceOf(msg.sender)
-    if bal > 0:
-        ERC20(OLD_TOKEN).transferFrom(msg.sender, self, bal)
-        old_amount += bal
-
     # Get usdt/wbtc/weth
     if old_amount > 0:
         Swap(OLD_POOL).remove_liquidity(old_amount, empty(uint256[N_COINS]))
