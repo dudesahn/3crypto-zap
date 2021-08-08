@@ -43,9 +43,12 @@ def token():
     token_address = "0x3D980E50508CFd41a13837A60149927a11c03731"  # this should be the address of the ERC-20 used by the zap (triCrypto)
     yield Contract(token_address)
 
+
 @pytest.fixture
 def newToken():
-    token_address = "0xE537B5cc158EB71037D4125BDD7538421981E6AA"  # this is our new vault address
+    token_address = (
+        "0xE537B5cc158EB71037D4125BDD7538421981E6AA"  # this is our new vault address
+    )
     yield Contract(token_address)
 
 
@@ -55,7 +58,7 @@ def whale(accounts):
     # Update this with a large holder of your want token (largest EOA holder of triCrypto vault token)
     whale = accounts.at("0x718f06A344bfeCf6664D8d329a14dc9Bb8Ff2246", force=True)
     yield whale
-    
+
 
 @pytest.fixture
 def zap(gov, tricrypto_migrator):
