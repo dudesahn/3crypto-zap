@@ -8,3 +8,6 @@ reports/
 
 # Node/npm
 node_modules/
+tests/.DS_Store
+contracts/.DS_Store
+.DS_Store

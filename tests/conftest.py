@@ -40,51 +40,24 @@ def keeper(accounts):
 
 @pytest.fixture
 def token():
-    token_address = "0x6b175474e89094c44da98b954eedeac495271d0f"  # this should be the address of the ERC-20 used by the strategy/vault (DAI)
+    token_address = "0x3D980E50508CFd41a13837A60149927a11c03731"  # this should be the address of the ERC-20 used by the zap (triCrypto)
+    yield Contract(token_address)
+
+@pytest.fixture
+def newToken():
+    token_address = "0xE537B5cc158EB71037D4125BDD7538421981E6AA"  # this is our new vault address
     yield Contract(token_address)
 
 
-@pytest.fixture
-def amount(accounts, token, user):
-    amount = 10_000 * 10 ** token.decimals()
-    # In order to get some funds for the token you are about to use,
-    # it impersonate an exchange address to use it's funds.
-    reserve = accounts.at("0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643", force=True)
-    token.transfer(user, amount, {"from": reserve})
-    yield amount
-
+@pytest.fixture(scope="module")
+def whale(accounts):
+    # Totally in it for the tech
+    # Update this with a large holder of your want token (largest EOA holder of triCrypto vault token)
+    whale = accounts.at("0x718f06A344bfeCf6664D8d329a14dc9Bb8Ff2246", force=True)
+    yield whale
+    
 
 @pytest.fixture
-def weth():
-    token_address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-    yield Contract(token_address)
-
-
-@pytest.fixture
-def weth_amout(user, weth):
-    weth_amout = 10 ** weth.decimals()
-    user.transfer(weth, weth_amout)
-    yield weth_amout
-
-
-@pytest.fixture
-def vault(pm, gov, rewards, guardian, management, token):
-    Vault = pm(config["dependencies"][0]).Vault
-    vault = guardian.deploy(Vault)
-    vault.initialize(token, gov, rewards, "", "", guardian, management)
-    vault.setDepositLimit(2 ** 256 - 1, {"from": gov})
-    vault.setManagement(management, {"from": gov})
-    yield vault
-
-
-@pytest.fixture
-def strategy(strategist, keeper, vault, Strategy, gov):
-    strategy = strategist.deploy(Strategy, vault)
-    strategy.setKeeper(keeper)
-    vault.addStrategy(strategy, 10_000, 0, 2 ** 256 - 1, 1_000, {"from": gov})
-    yield strategy
-
-
-@pytest.fixture(scope="session")
-def RELATIVE_APPROX():
-    yield 1e-5
+def zap(gov, tricrypto_migrator):
+    zap = gov.deploy(tricrypto_migrator)
+    yield zap

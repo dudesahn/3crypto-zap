@@ -72,7 +72,7 @@ def is_safe():
 
 
 @external
-def migrate_to_new_pool():
+def migrate_to_new_vault():
     """
     @notice Migrate liquidity between two pools
     Better to transfer 1 wei of old LP to the zap and keep 1 wei of each token
